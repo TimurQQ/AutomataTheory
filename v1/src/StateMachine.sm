@@ -1,0 +1,54 @@
+%start MainMap::Start
+%class StateMachine
+
+%map MainMap
+// State    Transition                                    End State     Action(s)
+%%
+Start
+{
+            Letter(letter: char)[ctxt.checkSymCount(3)]   Start         { addToBuffer(letter);}
+            Colon [ctxt.isCorrectType()]                  GetNumbers    { setMessageType(); clearBuffer();}
+            Default                                       Unacceptable  { setUnacceptable();}
+}
+GetNumbers
+{
+            Plus                                          GetDigits     {}
+            Default                                       Unacceptable  { setUnacceptable();}
+}
+GetDigits
+{
+            Digit(digit: char)[ctxt.checkSymCount(11)]   GetDigits      { addToBuffer(digit);}
+            Comma[!ctxt.checkSymCount(11)]               GetNumbers    { addNumber(); clearBuffer();}
+            Semicolon[!ctxt.checkSymCount(11)]           GetMessage    { addNumber(); clearBuffer();}
+            Default                                      Unacceptable  { setUnacceptable();}
+}
+GetMessage
+{
+            RequestStartSign[ctxt.isSMS()]                GetBody       {}
+            EOS                                           Acceptable    { setAcceptable();}
+            Default                                       Unacceptable  { setUnacceptable();}
+}
+GetBody
+{
+            Letter(letter: char)[ctxt.checkSymCount(4)]   GetBody       { addToBuffer(letter);}
+            EqStatement[ctxt.isCorrectParam()]            GetBodyText   { clearBuffer();}
+            Default                                       Unacceptable  { setUnacceptable();}
+}
+GetBodyText
+{
+            Letter(letter: char)[ctxt.checkSymCount(64)]  GetBodyText   { addToBuffer(letter);}
+            Digit(digit: char)[ctxt.checkSymCount(64)]    GetBodyText   { addToBuffer(digit);}
+            Comma[ctxt.checkSymCount(64)]                 GetBodyText   { addToBuffer(',');}
+            RequestStartSign[ctxt.checkSymCount(64)]      GetBodyText   { addToBuffer('?');}
+            Sign(sign: char)[ctxt.checkSymCount(64)]      GetBodyText   { addToBuffer(sign);}
+            EOS                                           Acceptable    { setMessageBody(); setAcceptable();}
+            Default                                       Unacceptable  { setUnacceptable();}
+}
+Unacceptable
+{
+            Default                                       nil           {}
+            Unknown                                       nil           {}
+}
+Acceptable
+{}
+%%

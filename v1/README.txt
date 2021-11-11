@@ -1,0 +1,1 @@
+java -jar ..\SmcSrc_6_6_0\smc\bin\Smc.jar -java -d .\src\ .\src\StateMachine.sm

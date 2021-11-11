@@ -6,7 +6,7 @@ import java.util.List;
 
 public class StatMaster {
     private final HashMap<String, Long> statistic = new HashMap<>();
-    private final List<String> numbers = new ArrayList<String>();
+    private final List<String> numbers = new ArrayList<>();
 
     HashMap<String, Long> getStatistic() {
         statistic.clear();
